@@ -10,9 +10,8 @@ export class Vote{
     private Voters: Voter[];
     private endVote: boolean;
     private canJoin: boolean;
-    private roomCreator: Socket;
 
-    constructor(title: string, description: string, creator: Socket){
+    constructor(title: string, description: string){
         this.title = title;
         this.description = description;
         this.Voters = [];
@@ -30,6 +29,8 @@ export class Vote{
 
     public getResult(): IResultVote{
         return {
+            title: this.title,
+            description: this.description,
             numberFor: this.getNumberVotersFor(),
             numberAgainst: this.getNumberVotersAgainst(),
             numberOfVoters: this.Voters.length,
@@ -44,14 +45,12 @@ export class Vote{
         }
     }
 
-    public stopJoining(applicant: Socket){
-        if(this.roomCreator === applicant)
-            this.canJoin = false;
+    public stopJoining(){
+        this.canJoin = false;
     }
 
-    public stopVote(applicant: Socket){
-        if(this.roomCreator === applicant)
-            this.endVote = true;
+    public stopVote(){
+        this.endVote = true;
     }
 
     private getNumberVotersFor(){
