@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "module": "CommonJS",
-        "strict": true,
+        "strict": false,
         "outDir": "dist",
         "typeRoots": [
             "src/@types",

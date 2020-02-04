@@ -17,7 +17,6 @@ export class Vote{
         this.Voters = [];
         this.endVote = false;
         this.canJoin = true;
-        this.roomCreator = creator;
     }
 
     public getData(): IDataVote{

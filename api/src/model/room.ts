@@ -3,6 +3,7 @@ import { Socket } from "socket.io";
 
 export class Room{
 
+    private static InstanceRoom: Room;
     private votes: Vote[];
     private voteInProgress: Vote;
     private participants: Socket[];
@@ -15,22 +16,30 @@ export class Room{
         this.participants = [];
     }
 
-    public createVote(title: string, description: string){
-        let vote = new Vote(title, description);
-        this.votes.push(vote);
-        this.voteInProgress = vote;
+    public createVote(title: string, description: string, socket: Socket){
+        if(this.voteInProgress){
+            if(socket === this.roomCreator){
+                let vote = new Vote(title, description);
+                this.votes.push(vote);
+                this.voteInProgress = vote;
+                
+                this.participants.forEach(el => {
+                    this.voteInProgress.addVoters(el);
+                });
         
-        this.participants.forEach(el => {
-            this.voteInProgress.addVoters(el);
-        });
+                this.voteInProgress.stopJoining();
+                socket.emit("voteCreated");
+            }
+        } else{
+            socket.emit("voteAlreadyInProgress");
+        }
 
-        this.voteInProgress.stopJoining();
     }
 
     public join(socket: Socket){
         this.participants.push(socket);
         if(this.voteInProgress != null)
-            socket.emit("voteInProgress", {});
+            socket.emit("voteInProgress");
     }
 
     public left(socket: Socket){
@@ -38,11 +47,13 @@ export class Room{
             if(el !== socket)
                 return true;
         });
+        socket.emit("roomLeft");
     }
 
     public stopVoteInProgress(socket: Socket){
         if(this.roomCreator === socket){
             this.voteInProgress.stopVote;
+            this.voteInProgress = null;
             this.roomCreator.emit("voteResult", this.voteInProgress.getResult());
         }
     }
@@ -54,5 +65,19 @@ export class Room{
         this.participants = [];
         this.votes = [];
         this.voteInProgress = null;
+        this.roomCreator.emit("roomDeleted");
+    }
+
+    public static getInstance(socket: Socket): Room{
+        if(!this.InstanceRoom){
+            this.InstanceRoom = new Room(socket);
+        }
+        return this.InstanceRoom;
+    }
+
+    public static existInstance(): boolean{
+        if(this.InstanceRoom)
+            return true;
+        return false;
     }
 }
