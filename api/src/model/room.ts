@@ -1,5 +1,6 @@
 import { Vote } from "./vote";
 import { Socket } from "socket.io";
+import { IDataVote } from "./IDataVote";
 
 export class Room{
 
@@ -17,7 +18,9 @@ export class Room{
     }
 
     public createVote(title: string, description: string, socket: Socket){
-        if(this.voteInProgress){
+        console.log(!this.voteInProgress);
+        console.log(socket === this.roomCreator);
+        if(!this.voteInProgress){
             if(socket === this.roomCreator){
                 let vote = new Vote(title, description);
                 this.votes.push(vote);
@@ -58,6 +61,12 @@ export class Room{
         }
     }
 
+    public getDataVoteInProgress(): IDataVote{
+        if(this.voteInProgress)
+            return this.voteInProgress.getData();
+        return null;
+    }
+
     public deleteRoom(){
         this.participants.forEach((socket) => {
             socket.emit("roomDeleted");
@@ -66,6 +75,10 @@ export class Room{
         this.votes = [];
         this.voteInProgress = null;
         this.roomCreator.emit("roomDeleted");
+    }
+
+    public isCreator(socket: Socket): boolean{
+        return this.roomCreator === socket;
     }
 
     public static getInstance(socket: Socket): Room{

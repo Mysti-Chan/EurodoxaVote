@@ -4,6 +4,7 @@ import * as Path from "path";
 import * as Http from "http"
 import * as SocketIo from "socket.io";
 import { IoClient } from "./IoClient";
+import * as cors from "cors"
 
 export class Server{
 
@@ -20,10 +21,13 @@ export class Server{
         this.app = Express();
         this.ioClients = [];
 
+        this.app.use(cors())
+
         this.httpServer = new Http.Server(this.app)
         this.sockerServer = SocketIo(this.httpServer);
 
         this.sockerServer.on("connection", (socket: SocketIo.Socket) =>{
+            console.log("client connected")
             this.ioClients.push(new IoClient(socket));
         });
 
@@ -37,6 +41,11 @@ export class Server{
     }
 
     public start(){
+
+        this.httpServer.listen(3011, () =>{
+            console.log(`Socketio listening on 3011`);
+        })
+
         this.app.listen(this.port, this.host, ()=>{
             console.log(`Server listening on ${this.port}`);
         });
