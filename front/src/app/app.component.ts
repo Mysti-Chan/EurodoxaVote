@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Socket } from 'ngx-socket-io';
+import { VoteService } from './services/vote.service';
 
 @Component({
   selector: 'app-root',
@@ -9,42 +9,19 @@ import { Socket } from 'ngx-socket-io';
 export class AppComponent {
   title = 'front';
 
-  constructor(private socket: Socket){
+  constructor(private voteService: VoteService){
 
-    this.socket.on("roomJoined", (data) =>{
-      console.log(data);
-    });
-
-    this.socket.on("noRoom", () =>{
-      console.log("no room");
-    });
-
-    this.socket.on("RoomAlreadyExist", () =>{
-      console.log("RoomAlreadyExist");
-    });
-
-    
-    this.socket.on("roomCreated", () =>{
-      console.log("room created");
-    });
-
-    this.socket.on("voteCreated", () =>{
-      console.log("vote created");
-    });
-
-
-
-
-  }
-  clickJoin(){
-    this.socket.emit("joinRoom");
   }
 
   clickCreateRoom(){
-    this.socket.emit("createRoom");
+    this.voteService.createRoom(() => {
+      console.log("Room created");
+    })
   }
 
   clickCreateVote(){
-    this.socket.emit("createVote");
+    this.voteService.createVote(() => {
+      console.log("vote created");
+    })
   }
 }

@@ -1,3 +1,26 @@
-<button (click)="clickJoin()">join room</button>
-<button (click)="clickCreateRoom()">Create room</button>
-<button (click)="clickCreateVote()">Create Vote</button>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <mat-toolbar>
+                <mat-toolbar-row>
+                    <img src="../assets/Logo.png" width="60px" height="60px" style="margin-right: 5px;">
+                    <span>Eurodoxa Vote Simulation</span>
+                    <span style="flex: 1 1 auto;"></span>
+                    <button mat-button *ngIf="false">
+                        <mat-icon class="example-icon" aria-hidden="false" aria-label="Example heart icon">person</mat-icon>
+                    </button>
+                    <button mat-button>
+                        <mat-icon class="example-icon" aria-hidden="false">input</mat-icon>
+                    </button>
+                </mat-toolbar-row>
+            </mat-toolbar>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6"></div>
+        <div class="col-md-6"></div>
+        <div class="col-xs-12"></div>
+    </div>
+    <button mat-raised-button (click)="clickCreateRoom()">Create room</button>
+    <button mat-raised-button (click)="clickCreateVote()">Create Vote</button>
+</div>

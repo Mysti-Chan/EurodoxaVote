@@ -18,8 +18,6 @@ export class Room{
     }
 
     public createVote(title: string, description: string, socket: Socket){
-        console.log(!this.voteInProgress);
-        console.log(socket === this.roomCreator);
         if(!this.voteInProgress){
             if(socket === this.roomCreator){
                 let vote = new Vote(title, description);
@@ -69,12 +67,14 @@ export class Room{
 
     public deleteRoom(){
         this.participants.forEach((socket) => {
-            socket.emit("roomDeleted");
+            socket.emit("roomNotExist");
         });
+        
         this.participants = [];
         this.votes = [];
         this.voteInProgress = null;
         this.roomCreator.emit("roomDeleted");
+        Room.InstanceRoom = null;
     }
 
     public isCreator(socket: Socket): boolean{
@@ -86,6 +86,10 @@ export class Room{
             this.InstanceRoom = new Room(socket);
         }
         return this.InstanceRoom;
+    }
+
+    public static DeleteInstance() {
+        this.InstanceRoom = null;
     }
 
     public static existInstance(): boolean{

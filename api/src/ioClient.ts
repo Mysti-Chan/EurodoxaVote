@@ -8,28 +8,30 @@ export class IoClient{
     constructor(socket: Socket){
         this.socket = socket;
 
-        socket.on("joinRoom", () =>{
+        if(Room.existInstance()){
+            socket.emit("roomExist");
+        } else {
+            socket.emit("roomNotExist");
+        }
+
+        socket.on("voteInformation", () =>{
             if(Room.existInstance()){
                 let room = Room.getInstance(socket);
-                socket.emit("roomJoined", room.getDataVoteInProgress());
-            } else {
-                socket.emit("noRoom");
+                socket.emit("voteInformation",room.getDataVoteInProgress());
             }
+        })
+
+        socket.on("createRoom", (data, fn) =>{
+            console.log("paf")
+            Room.DeleteInstance();
+            Room.getInstance(socket);
+            fn();
         });
 
-        socket.on("createRoom", () =>{
-            if(Room.existInstance()){
-                socket.emit("RoomAlreadyExist");
-            } else {
-                let room = Room.getInstance(socket);
-                socket.emit("roomCreated");
-            }
-        });
-
-        socket.on("createVote", () =>{
+        socket.on("createVote", (data, fn) =>{
             if(Room.existInstance()){
                 let room = Room.getInstance(socket);
-                room.createVote("je suis un titre", "je suis une description", socket);
+                room.createVote(data.title, data.description, socket);
             } else {
                 socket.emit("noRoom");
             }

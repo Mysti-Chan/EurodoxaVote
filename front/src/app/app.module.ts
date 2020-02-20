@@ -4,7 +4,13 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import {SocketIoConfig, SocketIoModule} from "ngx-socket-io"
+import {SocketIoConfig, SocketIoModule} from "ngx-socket-io";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatIconModule} from '@angular/material/icon';
+import {MatButtonModule} from '@angular/material/button';
+import { VoteService } from './services/vote.service';
 
 const config: SocketIoConfig = { url: 'http://localhost:3011', options: {} };
 
@@ -15,9 +21,15 @@ const config: SocketIoConfig = { url: 'http://localhost:3011', options: {} };
   imports: [
     BrowserModule,
     AppRoutingModule,
-    SocketIoModule.forRoot(config)
+    MatToolbarModule,
+    MatIconModule,
+    MatButtonModule,
+    SocketIoModule.forRoot(config),
+    BrowserAnimationsModule
   ],
-  providers: [],
+  providers: [
+    VoteService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
