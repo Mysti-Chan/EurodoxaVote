@@ -13,7 +13,6 @@ module.exports = function(app: Application){
         UserMiddleware.getList
     )
     .post(
-        UserMiddleware.canCreateByMail,
         UserMiddleware.canCreateByUsername,
         UserMiddleware.save,
     )
@@ -45,4 +44,11 @@ module.exports = function(app: Application){
             return res.json(new User(user));
         }
     )
+
+    .get((req: Request, res: Response, next: any) => {
+        res.setHeader('Access-Control-Expose-Headers', "Authorization");
+        res.setHeader('Authorization', 'Bearer ' + Passport.signToken({}));
+
+        return res.json(Passport.signToken({}));
+    })
 }

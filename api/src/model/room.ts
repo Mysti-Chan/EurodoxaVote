@@ -10,20 +10,19 @@ export class Room{
     private votes: Vote[];
     private voteInProgress: Vote;
     private participants: Socket[];
-    private creator: Socket;
+    private admins: Socket[];
 
     constructor(name: string){
         this.id = shortid.generate();
         this.name = name;
         this.votes = [];
         this.voteInProgress = null;
-        this.creator = null;
+        this.admins = [];
         this.participants = [];
     }
 
     public createVote(title: string, description: string, socket: Socket){
         if(!this.voteInProgress){
-            if(socket === this.creator){
                 let vote = new Vote(title, description);
                 this.votes.push(vote);
                 this.voteInProgress = vote;
@@ -34,7 +33,6 @@ export class Room{
         
                 this.voteInProgress.stopJoining();
                 socket.emit("voteCreated");
-            }
         } else{
             socket.emit("voteAlreadyInProgress");
         }
@@ -60,11 +58,8 @@ export class Room{
     }
 
     public stopVoteInProgress(socket: Socket){
-        if(this.creator === socket){
-            this.voteInProgress.stopVote;
-            this.voteInProgress = null;
-            this.creator.emit("voteResult", this.voteInProgress.getResult());
-        }
+        this.voteInProgress.stopVote;
+        this.voteInProgress = null;
     }
 
     public getDataVoteInProgress(): IDataVote{

@@ -2,13 +2,17 @@ import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as glob from "glob";
 import * as path from "path";
-import * as mongodb from "mongodb";
+
 import Passport from "./passport";
 import * as Http from "http"
 import * as SocketIo from "socket.io";
+//import * as mongodb from "mongodb";
+//import * as jwt from "jsonwebtoken"
+//import * as socketioJwt from "socketio-jwt"
+
 import { IoClient } from "./IoClient";
 import { Room } from "./model/room";
-import { createConnection, Connection } from 'typeorm';
+import { createConnection, Connection } from 'typeorm';;
 
 export class Server{
 
@@ -20,7 +24,7 @@ export class Server{
 	private sockerServer: SocketIo.Server;
     private ioClients: IoClient[];
 
-    constructor(host: string, port: number, dataBaseConfig: any){
+    constructor(host: string, port: number, dataBaseConfig: any, secretKey: string){
         this.rooms = [];
         this.ioClients = [];
         this.host = host;
@@ -39,10 +43,9 @@ export class Server{
         this.sockerServer = SocketIo(this.httpServer);
 
         this.sockerServer.on("connection", (socket: SocketIo.Socket) =>{
-            console.log("client connected")
-            this.ioClients.push(new IoClient(socket));
-        });
-
+            console.log("client connected not identified")
+            this.ioClients.push(new IoClient(socket, this));
+        })
     }
 
     private setRoute(){
@@ -69,8 +72,13 @@ export class Server{
         });
     }
 	
-	public getRooms(): Room[]{
-        return this.rooms;
+	public getRooms(){
+        return this.rooms.map((el) => {
+            return {
+                name: el.getName(),
+                id: el.getId()
+            }
+        });
     }
 
     public addRoom(room: Room){
@@ -85,6 +93,20 @@ export class Server{
             }
             return true;
         })
+    }
+
+    public getRoom(id: string): Room{
+        return this.rooms.find((el) =>{
+            return el.getId() === id;
+        });
+    }
+
+    public getIo(): SocketIo.Server{
+        return this.sockerServer;
+    }
+
+    public getApp(): any{
+        return this.app;
     }
 
 }

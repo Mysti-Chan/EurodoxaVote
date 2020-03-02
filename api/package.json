@@ -38,6 +38,7 @@
     "passport-local": "^1.0.0",
     "shortid": "^2.2.15",
     "socket.io": "^2.3.0",
+    "socketio-jwt": "github:auth0-community/auth0-socketio-jwt",
     "typeorm": "^0.2.24"
   }
 }

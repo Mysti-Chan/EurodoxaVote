@@ -9,5 +9,5 @@ import { Server } from "./server";
 const host = Config.get("host");
 const port = Config.get("port");
 
-const server = new Server(host,port, Config.get("db"));
+const server = new Server(host,port, Config.get("db"), Config.get('jwt').secret);
 server.start();

@@ -19,6 +19,14 @@ export class VoteService {
     
     this.RoomExistSubject = new Subject<boolean>();
     this.voteInformationSubject = new Subject<Vote>();
+    this.socket.emit('authenticate', {token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1ODMxNTgwNjAsImV4cCI6MTU4MzQxNzI2MH0.rZ2HywlPcgBXZ_HR5_f8Sak0tytDjXI4YqHuX-xR-ss"})
+    .on('authenticated', () => {
+      console.log("paf");
+    })
+    .on('unauthorized', (msg) => {
+      console.log(`unauthorized: ${JSON.stringify(msg.data)}`);
+      throw new Error(msg.data.type);
+    }) //send the jwt
 
     this.socket.on("roomNotExist", () =>{
       this.roomExist = false;

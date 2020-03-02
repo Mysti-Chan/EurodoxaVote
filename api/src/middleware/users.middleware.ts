@@ -123,24 +123,6 @@ export class UserMiddleware{
 
     /**
      * Regarde si il est possible de créer l'utilisateur 
-     * dans la base de donnée en fonction de son mail
-     */
-    public static canCreateByMail(req: Request, res: Response, next: any) {
-        const email = req.body.email
-
-        getMongoManager().findOne(UserEntity, {email})
-            .then(user => {
-                if (user) {
-                    return res.status(409).json({
-                        title: "this mail is already used"
-                    });
-                }
-                next()
-            })
-    }
-
-    /**
-     * Regarde si il est possible de créer l'utilisateur 
      * dans la base de donnée en fonction de son nom d'utilisateur
      */
     public static canCreateByUsername(req: Request, res: Response, next: any) {
