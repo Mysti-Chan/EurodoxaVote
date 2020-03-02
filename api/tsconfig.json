@@ -1,20 +1,21 @@
 {
     "compilerOptions": {
-        "module": "CommonJS",
-        "strict": false,
         "outDir": "dist",
-        "typeRoots": [
-            "src/@types",
-            "node_modules/@types"
-          ],
         "target": "es6",
+        "strict": false,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "module": "commonjs"
     },
     "include": [
-        "src"
+        "src/**/*"
     ],
-    "exclude": [
-        "node_modules",
-        "dist",
-        "**/*.spec.ts"
+    "typeRoots": [
+        "src/@types",
+        "node_modules/@types"
+      ],
+    "lib": [
+        "es5",
+        "es6"
     ]
 }

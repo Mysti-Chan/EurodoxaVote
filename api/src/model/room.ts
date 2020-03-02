@@ -1,25 +1,29 @@
 import { Vote } from "./vote";
 import { Socket } from "socket.io";
 import { IDataVote } from "./IDataVote";
+import * as shortid from 'shortid';
 
 export class Room{
 
-    private static InstanceRoom: Room;
+    private id: string;
+    private name: string;
     private votes: Vote[];
     private voteInProgress: Vote;
     private participants: Socket[];
-    private roomCreator: Socket;
+    private creator: Socket;
 
-    constructor(creator: Socket){
+    constructor(name: string){
+        this.id = shortid.generate();
+        this.name = name;
         this.votes = [];
         this.voteInProgress = null;
-        this.roomCreator = creator;
+        this.creator = null;
         this.participants = [];
     }
 
     public createVote(title: string, description: string, socket: Socket){
         if(!this.voteInProgress){
-            if(socket === this.roomCreator){
+            if(socket === this.creator){
                 let vote = new Vote(title, description);
                 this.votes.push(vote);
                 this.voteInProgress = vote;
@@ -38,6 +42,10 @@ export class Room{
     }
 
     public join(socket: Socket){
+        if(this.creator == null){
+            this.creator = socket;
+        }
+
         this.participants.push(socket);
         if(this.voteInProgress != null)
             socket.emit("voteInProgress");
@@ -52,10 +60,10 @@ export class Room{
     }
 
     public stopVoteInProgress(socket: Socket){
-        if(this.roomCreator === socket){
+        if(this.creator === socket){
             this.voteInProgress.stopVote;
             this.voteInProgress = null;
-            this.roomCreator.emit("voteResult", this.voteInProgress.getResult());
+            this.creator.emit("voteResult", this.voteInProgress.getResult());
         }
     }
 
@@ -73,28 +81,22 @@ export class Room{
         this.participants = [];
         this.votes = [];
         this.voteInProgress = null;
-        this.roomCreator.emit("roomDeleted");
-        Room.InstanceRoom = null;
+        this.creator.emit("roomDeleted");
     }
 
+    public isVoteInProgress(): boolean{
+        return this.voteInProgress !== null;
+    }
+    
     public isCreator(socket: Socket): boolean{
-        return this.roomCreator === socket;
+        return this.creator === socket;
     }
 
-    public static getInstance(socket: Socket): Room{
-        if(!this.InstanceRoom){
-            this.InstanceRoom = new Room(socket);
-        }
-        return this.InstanceRoom;
+    public getName(): string{
+        return this.name;
     }
 
-    public static DeleteInstance() {
-        this.InstanceRoom = null;
-    }
-
-    public static existInstance(): boolean{
-        if(this.InstanceRoom)
-            return true;
-        return false;
+    public getId(): string{
+        return this.id;
     }
 }

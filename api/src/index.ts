@@ -1,4 +1,13 @@
-import {Server} from "./server";
+/**
+ * @author DE BRUYNE Alexis
+ * Last Update: 4/12/2019
+ */
 
-const server = new Server("localhost", 3000);
+const Config = require("./config/config");
+import { Server } from "./server";
+
+const host = Config.get("host");
+const port = Config.get("port");
+
+const server = new Server(host,port, Config.get("db"));
 server.start();
